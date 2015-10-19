@@ -17,6 +17,7 @@ router.get('/dashboard', function(req, res, next) {
 });
 
 router.post('/register', function(req, res, next){
+	console.log('yusif');
 	var name = req.body.name;
 	var email = req.body.email;
 	var username = req.body.username;
@@ -28,15 +29,17 @@ router.post('/register', function(req, res, next){
 	req.checkBody('email', 'Must be valid email address').isEmail();
 	req.checkBody('username', 'Username field is required').notEmpty();
 	req.checkBody('password', 'Password field is required').notEmpty();
-	req.checkBody('password2', 'Passwords should match').equals(req.body.password);
-
+	//req.checkBody('password2', 'Passwords should match').equals(req.body.password);
+  
 	var errors = req.validationErrors();
 
 	if(errors){
+		console.log('xiiiii');
 		res.render('register',{
 			errors: errors
 		});
 	} else{
+		console.log('xxxxx');
 		passport.authenticate('local-register', {
 			successRedirect:'/dashboard',
 			failureRedirect: '/',
