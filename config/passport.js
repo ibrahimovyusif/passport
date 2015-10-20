@@ -13,13 +13,40 @@ module.exports = function(passport){
   		});
 	});
 
+	//login
+	passport.use('local-login', new LocalStrategy({
+		passReqToCallback: true
+	},
+	function(req, username, password, done){
+		User.getUserByUsername(username, function(err, user){
+			if(err){
+				return done(err);
+			}
+			//Does user exists
+			if(!user){
+				req.flash('error', 'User not found');
+				return done(null, false);
+			}
+			// password valid?
+			if(!isValidPassword(user, password)){
+				req.flash('error', 'Invalid password');
+				return(null, false);
+			}
+
+			req.flash('success', 'You are now logged in');
+			return done(null, user);
+
+		});
+	}
+	)); 
+
 	//Register
 	passport.use('local-register', new LocalStrategy(
 
 		{
 			passReqToCallback: true
 		},
-
+ 
 		function(req, username, password, done) {
 			findOrCreateUser = function(){
 			// Find a user with this username
@@ -44,13 +71,17 @@ module.exports = function(passport){
 					newUser.name = req.param('name');
 					newUser.join_date = new Date();
 
+
+					console.log('wtaksInDeHu');
 					//add user
 					User.addUser(newUser, function(err, user){
 						if(err){
+							console.log("Passport, line 79");
 							console.log('Error: '+err);
 							throw err;
 						}
 						else{
+							console.log("Passport, line 84");
 							req.flash('success', 'You are registered and logged in');
 							return done(null, newUser);
 						}
@@ -62,6 +93,10 @@ module.exports = function(passport){
 		process.nextTick(findOrCreateUser)
 	}
 	));
+
+	var isValidPassword = function(user, password){
+		return bcrypt.compareSync(password, user.password);
+	}
 
 	var createHash = function(password){
 		return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);

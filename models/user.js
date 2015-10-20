@@ -32,6 +32,12 @@ module.exports.getUserById = function(id, callback){
 	User.findById(id, callback);
 }
 
+//Get user by username
+module.exports.getUserByUsername = function(username, callback){
+	User.findOne({username: username}, callback);
+}
+
+
 //compare password
 module.exports.comparePassword = function(candidatePassword, hash, callback){
 	bcrypt.compare(candidatePassword, hash, function(err, isMatch){
@@ -41,4 +47,9 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
 			callback(null, isMatch);
 		}
 	});
+}
+
+//add user
+module.exports.addUser = function(user, callback){
+	User.create(user, callback);
 }
